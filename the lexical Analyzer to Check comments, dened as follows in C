@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <string.h>
+
+int is_comment(char *line) {
+    // Check for single-line comments starting with //
+    if (strncmp(line, "//", 2) == 0) {
+        return 1;
+    }
+    
+    // Check for multi-line comments starting with /*
+    if (strstr(line, "/*") != NULL) {
+        // If */ is not found after /*
+        if (strstr(line, "*/") == NULL) {
+            return 1;
+        }
+        // If */ is found after /*
+        else if (strstr(line, "/*") < strstr(line, "*/")) {
+            return 1;
+        }
+    }
+    
+    return 0;
+}
+
+int main() {
+    char line[100];
+    
+    // Test the lexical analyzer
+    char *lines[] = {
+        "int main() {",                       // Not a comment
+        "// This is a single-line comment",   // Single-line comment
+        "/* This is a",                       // Multi-line comment
+        "multi-line comment */",              // Multi-line comment
+        "int a = 5; // Inline comment",       // Not a comment
+        "/* Another multi-line",              // Multi-line comment
+        "comment */",                         // Multi-line comment
+    };
+    
+    for (int i = 0; i < sizeof(lines) / sizeof(lines[0]); i++) {
+        strcpy(line, lines[i]);
+        printf("Line: %s - Is Comment: %d\n", line, is_comment(line));
+    }
+    
+    return 0;
+}
